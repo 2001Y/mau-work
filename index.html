@@ -39,16 +39,16 @@
         receive('{"x":' + x / w * 100 + ',"y":' + y / h * 100 + '}');
     }
 
-    let random = Math.floor(Math.random() * 11);
-    await(await fetch("https://api.github.com/gists/c751de342cd9676ae28ae3459b9dbe02?" + random, {
-        cache: "reload"
-    })).json().then(data => {
-        const array = JSON.parse(data.files["mau-work.json"].content);
-        view(array);
-        send(array, ea);
-    }).catch(err => {
-        console.log(err)
-    });
+    // let random = Math.floor(Math.random() * 11);
+    // await(await fetch("https://api.github.com/gists/c751de342cd9676ae28ae3459b9dbe02?" + random, {
+    //     cache: "reload"
+    // })).json().then(data => {
+    //     const array = JSON.parse(data.files["mau-work.json"].content);
+    //     view(array);
+    //     send(array, ea);
+    // }).catch(err => {
+    //     console.log(err)
+    // });
 
     async function receive(e) {
         let ea = JSON.parse(e);
@@ -58,6 +58,7 @@
         div.style.left = ea.x + "vw";
         main.appendChild(div);
 
+        let random = Math.floor(Math.random() * 11);
         await (await fetch("https://api.github.com/gists/c751de342cd9676ae28ae3459b9dbe02?" + random, {
             cache: "reload"
         })).json().then(data => {
@@ -69,9 +70,11 @@
         });
     }
     async function send(array, e) {
-        array.unshift(e);
-        // view()
-        await fetch("https://api.github.com/gists/c751de342cd9676ae28ae3459b9dbe02", {
+        if (e) {
+            array.unshift(e);
+        }
+        let random = Math.floor(Math.random() * 11);
+        await fetch("https://api.github.com/gists/c751de342cd9676ae28ae3459b9dbe02?" + random, {
             method: "PATCH",
             headers: {
                 Accept: "application/vnd.github.v3+json",
@@ -87,7 +90,7 @@
             }),
             cache: "reload"
         }).then(data => {
-            console.log("DONE:setGist");
+            console.log(data);
         }).catch(err => {
             console.log(err);
         });
