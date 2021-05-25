@@ -16,14 +16,24 @@
         height: 100%;
     }
     .div {
-        width: 1em;
-        height: 1em;
-        background: #000;
+        width: 10vw;
+        height: 50vw;
         position: fixed;
+        transform-origin: 0% 0%;
+    }
+    h1 {
+        text-align: center;
+    }
+    #bg {
+        width: 100vw;
+        position: fixed;
+        bottom: 0;
+        left: 0;
     }
 </style>
 <body>
-
+    <h1>5月</h1>
+    <img src="/img/5.jpg" alt="" id=bg>
     <main id=main>
         <div id="div"></div>
     </main>
@@ -31,35 +41,40 @@
 </body>
 
 <script>
+    let url = "https://api.github.com/gists/c751de342cd9676ae28ae3459b9dbe02";
     document.body.onclick = function (event) {
         let w = window.innerWidth;
         let h = window.innerHeight;
         var x = event.pageX;	// 水平の位置座標
         var y = event.pageY;	// 垂直の位置座標
-        receive('{"x":' + x / w * 100 + ',"y":' + y / h * 100 + '}');
+        let r = Math.floor(Math.random() * 110);
+        receive('{"x":' + Math.round(x / w * 100) + ',"y":' + Math.round(y / h * 100) + ',"r":' + r + '}');
     }
-
-    // let random = Math.floor(Math.random() * 11);
-    // await(await fetch("https://api.github.com/gists/c751de342cd9676ae28ae3459b9dbe02?" + random, {
-    //     cache: "reload"
-    // })).json().then(data => {
-    //     const array = JSON.parse(data.files["mau-work.json"].content);
-    //     view(array);
-    //     send(array, ea);
-    // }).catch(err => {
-    //     console.log(err)
-    // });
+    async function f() {
+        let random = Math.floor(Math.random() * 11);
+        await(await fetch(url, {
+            cache: "reload"
+        })).json().then(data => {
+            const array = JSON.parse(data.files["mau-work.json"].content);
+            view(array);
+        }).catch(err => {
+            console.log(err)
+        });
+    }
+    f();
 
     async function receive(e) {
         let ea = JSON.parse(e);
-        let div = document.createElement("div");
+        let div = document.createElement("img");
+        div.src = "/bar.png";
         div.classList.toggle('div');
         div.style.top = ea.y + "vh";
         div.style.left = ea.x + "vw";
+        div.style.transform = "rotate(" + ea.r + "deg) translate(-50%, -50%)";
         main.appendChild(div);
 
         let random = Math.floor(Math.random() * 11);
-        await (await fetch("https://api.github.com/gists/c751de342cd9676ae28ae3459b9dbe02?" + random, {
+        await (await fetch(url + "?" + random, {
             cache: "reload"
         })).json().then(data => {
             const array = JSON.parse(data.files["mau-work.json"].content);
@@ -70,15 +85,12 @@
         });
     }
     async function send(array, e) {
-        // if (e) {
-        //     array.unshift(e);
-        // }
         array.unshift(e);
-        await fetch("https://api.github.com/gists/c751de342cd9676ae28ae3459b9dbe02", {
+        await fetch(url + "?client_id=f20a019347af6fed3db8&client_secret=ef7fd397cfd6feab1d6db84dfeea438a0db800cb", {
             method: "PATCH",
             headers: {
                 Accept: "application/vnd.github.v3+json",
-                Authorization: "token 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"
+                Authorization: "token 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"
             },
             body: JSON.stringify({
                 description: "Updated at " + new Date().toLocaleString(),
@@ -90,7 +102,7 @@
             }),
             cache: "reload"
         }).then(data => {
-            console.log(data);
+            // console.log(data);
         }).catch(err => {
             console.log(err);
         });
@@ -104,6 +116,7 @@
             div.classList.toggle('div');
             div.style.top = ea.y + "vh";
             div.style.left = ea.x + "vw";
+            div.style.transform = "rotate(" + ea.r + "deg) translate(-50%, -50%)";
             wrap.appendChild(div);
         })
         main.appendChild(wrap);
