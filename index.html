@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="jp">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<style>
+    html {
+        -ms-touch-action: manipulation;
+        touch-action: manipulation;
+    }
+    html,body {
+        height: 100%;
+    }
+    .div {
+        width: 1em;
+        height: 1em;
+        background: #000;
+        position: fixed;
+    }
+</style>
+<body>
+
+    <main id=main>
+        <div id="div"></div>
+    </main>
+
+</body>
+
+<script>
+    document.body.onclick = function (event) {
+        let w = window.innerWidth;
+        let h = window.innerHeight;
+        var x = event.pageX;	// 水平の位置座標
+        var y = event.pageY;	// 垂直の位置座標
+        receive('{"x":' + x / w * 100 + ',"y":' + y / h * 100 + '}');
+    }
+
+    let random = Math.floor(Math.random() * 11);
+    await(await fetch("https://api.github.com/gists/c751de342cd9676ae28ae3459b9dbe02?" + random, {
+        cache: "reload"
+    })).json().then(data => {
+        const array = JSON.parse(data.files["mau-work.json"].content);
+        view(array);
+        send(array, ea);
+    }).catch(err => {
+        console.log(err)
+    });
+
+    async function receive(e) {
+        let ea = JSON.parse(e);
+        let div = document.createElement("div");
+        div.classList.toggle('div');
+        div.style.top = ea.y + "vh";
+        div.style.left = ea.x + "vw";
+        main.appendChild(div);
+
+        await (await fetch("https://api.github.com/gists/c751de342cd9676ae28ae3459b9dbe02?" + random, {
+            cache: "reload"
+        })).json().then(data => {
+            const array = JSON.parse(data.files["mau-work.json"].content);
+            view(array);
+            send(array, ea);
+        }).catch(err => {
+            console.log(err)
+        });
+    }
+    async function send(array, e) {
+        array.unshift(e);
+        // view()
+        await fetch("https://api.github.com/gists/c751de342cd9676ae28ae3459b9dbe02", {
+            method: "PATCH",
+            headers: {
+                Accept: "application/vnd.github.v3+json",
+                Authorization: "token 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",
+            },
+            body: JSON.stringify({
+                description: "Updated at " + new Date().toLocaleString(),
+                files: {
+                    "mau-work.json": {
+                        content: JSON.stringify(array),
+                    },
+                },
+            }),
+            cache: "reload"
+        }).then(data => {
+            console.log("DONE:setGist");
+        }).catch(err => {
+            console.log(err);
+        });
+    }
+    async function view(e) {
+        main.removeChild(document.getElementById("div"));
+        let wrap = document.createElement("div");
+        wrap.id = "div";
+        e.forEach(async function (ea) {
+            let div = document.createElement("div");
+            div.classList.toggle('div');
+            div.style.top = ea.y + "vh";
+            div.style.left = ea.x + "vw";
+            wrap.appendChild(div);
+        })
+        main.appendChild(wrap);
+    }
+
+</script>
+
+</html>
