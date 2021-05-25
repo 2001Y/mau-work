@@ -70,15 +70,15 @@
         });
     }
     async function send(array, e) {
-        if (e) {
-            array.unshift(e);
-        }
-        let random = Math.floor(Math.random() * 11);
-        await fetch("https://api.github.com/gists/c751de342cd9676ae28ae3459b9dbe02?" + random, {
+        // if (e) {
+        //     array.unshift(e);
+        // }
+        array.unshift(e);
+        await fetch("https://api.github.com/gists/c751de342cd9676ae28ae3459b9dbe02", {
             method: "PATCH",
             headers: {
                 Accept: "application/vnd.github.v3+json",
-                Authorization: "token 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",
+                Authorization: "token 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"
             },
             body: JSON.stringify({
                 description: "Updated at " + new Date().toLocaleString(),
